@@ -1,0 +1,61 @@
+﻿@model Eshop.Domain.DTO.ShoppingCartDto
+
+<h1>Shopping cart</h1>
+@if (Model.ProductsInShoppingCart.Count == 0)
+{
+    <h5>No products in the shopping cart</h5>
+}
+else
+{
+    <div class="row">
+        <div class="form-group">
+            <a href="/ShoppingCart/OrderNow"class="btn btn-warning">Order now</a>
+        </div>
+    </div>
+<table class="table">
+    <thead>
+        <tr>
+            <th class="col-md-1">#</th>
+            <th class="col">Product Name</th>
+            <th class="col">Quantity</th>
+            <th class="col">Price</th>
+            <th class="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @{ 
+            var i = 1;
+            foreach (var item in Model.ProductsInShoppingCart)
+            {
+                <tr>
+                    <td>
+                        @(i++)
+                    </td>
+                    <td>
+                        @item.Product.ProductName
+                    </td>
+                    <td>
+                        @item.Quantity
+                    </td>
+                    <td>
+                        @item.Product.Price
+                    </td>
+                    <td>
+                        <a class="btn btn-danger" href="/ShoppingCart/DeleteFromShoppingCart/@item.Product.Id">Delete</a>
+                    </td>
+
+                </tr>
+            }
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <th>Total: </th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th>@Model.TotalPrice</th>
+        </tr>
+    </tfoot>
+</table>
+   }

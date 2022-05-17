@@ -1,0 +1,23 @@
+﻿@model Eshop.Domain.DTO.AddToShoppingCartDto
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<h1>Add selected product to shopping cart</h1>
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="AddToShoppingCart">
+            <input type="hidden" asp-for="ProductId" />
+            <div class="form-group">
+                <input disabled class="form-control" asp-for="SelectedProduct.ProductName" />
+            </div>
+            <div class="form-group">
+                <input type="number" class="form-control" asp-for="Quantity" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
