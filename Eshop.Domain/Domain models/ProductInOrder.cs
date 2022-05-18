@@ -15,6 +15,7 @@ namespace Eshop.Domain.Domain_models
         [ForeignKey("OrderId")]
         public int OrderId { get; set; }
         public Order Order { get; set; }
+        public int Quantity { get; set; }
 
     }
 }

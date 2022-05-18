@@ -85,7 +85,8 @@ namespace Service.implementation
                 Product = z.Product,
                 ProductId = z.ProductId,
                 Order = newOrder,
-                OrderId = newOrder.Id
+                OrderId = newOrder.Id,
+                Quantity = z.Quantity
             }).ToList();
             foreach (var item in productInOrder)
             {
