@@ -14,6 +14,7 @@ namespace EEshop.Repository
         public virtual DbSet<ShoppingCart> ShoppingCarts { get; set; }
         public virtual DbSet<ProductsInShoppingCart> ProductsInShoppingCarts { get; set; }
         public virtual DbSet<ShopApplicationUser> ShopApplicationUsers { get; set; }
+        public virtual DbSet<EmailMessage> EmailMessages { get; set; }
 
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<ProductInOrder> ProductInOrder {get;set;}

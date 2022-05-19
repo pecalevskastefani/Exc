@@ -18,14 +18,24 @@ using System.Linq;
 using System.Threading.Tasks;
 using EEshop.Repository;
 using Microsoft.AspNetCore.Http;
+using Eshop.Domain;
+using Service;
+using Service.implementation;
+using System.Net.Http;
+using System.Security.Authentication;
+using System.Net;
+using EShop.Service;
 
 namespace Exc
 {
     public class Startup
     {
+        private EmailSettings emailSettings;
         public Startup(IConfiguration configuration)
         {
+            emailSettings = new EmailSettings();
             Configuration = configuration;
+            Configuration.GetSection("EmailSettings").Bind(emailSettings);
         }
 
         public IConfiguration Configuration { get; }
@@ -44,9 +54,15 @@ namespace Exc
             services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
             services.AddScoped(typeof(IOrderRepository), typeof(OrderRepository));
 
+            services.AddScoped<EmailSettings>(es => emailSettings);
+            services.AddScoped<IEmailService, EmailService>(email => new EmailService(emailSettings));
+            services.AddScoped<IBackgroundEmailSender, Service.implementation.BackgroundEmailSender>();
+            services.AddHostedService<EmailScopedHostedService>();
+
             services.AddTransient<IProductService, Service.implementation.ProductService>();
             services.AddTransient<IShoppingCartService, Service.implementation.ShoppingCartService>();
             services.AddTransient<IOrderService, Service.implementation.OrderService>();
+            
 
             services.AddControllersWithViews().AddNewtonsoftJson(options=>options.SerializerSettings.ReferenceLoopHandling = 
             Newtonsoft.Json.ReferenceLoopHandling.Ignore);

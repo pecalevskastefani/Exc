@@ -17,13 +17,15 @@ namespace Service.implementation
         public readonly IRepository<ShoppingCart> _shoppingCartRepository;
         public readonly IRepository<Order> _orderRepository;
         public readonly IRepository<ProductInOrder> _productInOrderRepository;
-        public ShoppingCartService(IUserRepository userRepository, IRepository<ShoppingCart> shoppingCartRepository
+        public readonly IRepository<EmailMessage> _mailRepository;
+        public ShoppingCartService(IRepository<EmailMessage> mailRepository,IUserRepository userRepository, IRepository<ShoppingCart> shoppingCartRepository
             , IRepository<Order> orderRepository, IRepository<ProductInOrder> productInOrderRepository)
         {
             _userRepository = userRepository;
             _shoppingCartRepository = shoppingCartRepository;
             _orderRepository = orderRepository;
             _productInOrderRepository = productInOrderRepository;
+            _mailRepository = mailRepository;
         }
 
         public object User { get; private set; }
@@ -74,6 +76,11 @@ namespace Service.implementation
 
             var user = _userRepository.Get(userId);
             var userShoppingCart = user.UserShoppingCart;
+            EmailMessage message = new EmailMessage();
+            message.MailTo = user.Email;
+            message.Subject = "successfully created order";
+            message.Status = false;
+
             Order newOrder = new Order
             {
                 UserId = user.Id,
@@ -88,11 +95,27 @@ namespace Service.implementation
                 OrderId = newOrder.Id,
                 Quantity = z.Quantity
             }).ToList();
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("Your order is completed. The order contains: ");
+            var totalPrice = 0.0;
+            for(int i = 1; i <= productInOrder.Count; i++)
+            {
+                var item = productInOrder[i - 1];
+                totalPrice += item.Quantity * item.Product.Price;
+                sb.AppendLine(i.ToString() + "." + item.Product.ProductName + " with price of: " + item.Product.Price + " and quantity of: " + item.Quantity);
+               
+            }
+            sb.AppendLine("Total Price: " + totalPrice.ToString());
+            message.Content = sb.ToString();
+
+
             foreach (var item in productInOrder)
             {
                 _productInOrderRepository.Insert(item);//spored tipot productInOrder si znae deka tamu treba da addne
             }
             user.UserShoppingCart.ProductsInShoppingCarts.Clear(); //empty na shoppingcart
+            this._mailRepository.Insert(message);
             _userRepository.Update(user); //update na user
             return true;
         }
