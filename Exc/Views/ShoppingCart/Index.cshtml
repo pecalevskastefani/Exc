@@ -1,4 +1,6 @@
-﻿@model Eshop.Domain.DTO.ShoppingCartDto
+﻿@using Microsoft.Extensions.Options
+@inject IOptions<Eshop.Domain.StripeSettings> Stripe
+@model Eshop.Domain.DTO.ShoppingCartDto
 
 <h1>Shopping cart</h1>
 @if (Model.ProductsInShoppingCart.Count == 0)
@@ -7,9 +9,26 @@
 }
 else
 {
-    <div class="row">
+
+
+<div class="row">
         <div class="form-group">
-            <a href="/ShoppingCart/OrderNow"class="btn btn-warning">Order now</a>
+          @* <a href="/ShoppingCart/OrderNow"class="btn btn-warning">Order now</a>*@
+            @if (Model.TotalPrice != 0)
+            {
+            <form asp-controller="ShoppingCart" asp-action="PayOrder" method="post">
+                <article>
+                    <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+                            data-key="@Stripe.Value.PublishableKey"
+                            data-local="auto"
+                            data-description="Eshop Application Payment"
+                            data-amount="$@(Model.TotalPrice * 100)"
+                            data-label="Pay $@Model.TotalPrice">
+
+                    </script>
+                </article>
+            </form>
+            }
         </div>
     </div>
 <table class="table">
@@ -38,7 +57,7 @@ else
                         @item.Quantity
                     </td>
                     <td>
-                        @item.Product.Price
+                      $ @item.Product.Price
                     </td>
                     <td>
                         <a class="btn btn-danger" href="/ShoppingCart/DeleteFromShoppingCart/@item.Product.Id">Delete</a>
@@ -54,7 +73,7 @@ else
             <th></th>
             <th></th>
             <th></th>
-            <th>@Model.TotalPrice</th>
+            <th>$@Model.TotalPrice</th>
         </tr>
     </tfoot>
 </table>

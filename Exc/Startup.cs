@@ -25,6 +25,7 @@ using System.Net.Http;
 using System.Security.Authentication;
 using System.Net;
 using EShop.Service;
+using Stripe;
 
 namespace Exc
 {
@@ -54,10 +55,12 @@ namespace Exc
             services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
             services.AddScoped(typeof(IOrderRepository), typeof(OrderRepository));
 
-            services.AddScoped<EmailSettings>(es => emailSettings);
-            services.AddScoped<IEmailService, EmailService>(email => new EmailService(emailSettings));
-            services.AddScoped<IBackgroundEmailSender, Service.implementation.BackgroundEmailSender>();
-            services.AddHostedService<EmailScopedHostedService>();
+            //  services.AddScoped<EmailSettings>(es => emailSettings);
+            //services.AddScoped<IEmailService, EmailService>(email => new EmailService(emailSettings));
+            //services.AddScoped<IBackgroundEmailSender, Service.implementation.BackgroundEmailSender>();
+            //  services.AddHostedService<EmailScopedHostedService>();
+
+            services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
 
             services.AddTransient<IProductService, Service.implementation.ProductService>();
             services.AddTransient<IShoppingCartService, Service.implementation.ShoppingCartService>();
@@ -72,6 +75,7 @@ namespace Exc
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            StripeConfiguration.SetApiKey(Configuration.GetSection("Stripe")["SecretKey"]);
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
